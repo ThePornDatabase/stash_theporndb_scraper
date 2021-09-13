@@ -1089,7 +1089,7 @@ def main(args):
                 else:
                     logging.error("Did not find tag in Stash: " + tag_name, exc_info=config.debug_mode)
             
-            findScenes_params_incl['scene_filter']['tags'] = { 'modifier': 'INCLUDES','value': [*required_tag_ids] }
+            findScenes_params_incl['scene_filter']['tags'] = { 'modifier': 'INCLUDES','value': [*required_tag_ids], 'depth': 1 }
             if (not config.scrape_stash_id): # include only scenes without stash_id
                 findScenes_params_incl['scene_filter']['stash_id'] = { 'modifier': 'IS_NULL', 'value': 'none' }
             if (not config.scrape_organized): # include only scenes that are not organized
@@ -1111,7 +1111,7 @@ def main(args):
                 else:
                     logging.error("Did not find tag in Stash: " + tag_name, exc_info=config.debug_mode)
             
-            findScenes_params_excl['scene_filter']['tags'] = { 'modifier': 'EXCLUDES', 'value': [*excluded_tag_ids] }
+            findScenes_params_excl['scene_filter']['tags'] = { 'modifier': 'EXCLUDES', 'value': [*excluded_tag_ids], 'depth': 1 }
             if (not config.scrape_stash_id): # include only scenes without stash_id
                 findScenes_params_excl['scene_filter']['stash_id'] = { 'modifier': 'IS_NULL', 'value': 'none' }
             if (not config.scrape_organized): # include only scenes that are not organized
