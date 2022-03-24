@@ -407,6 +407,9 @@ def scrapeScene(scene):
         scraped_data = None
         # if config.use_oshash and scene['oshash']:
         #    scraped_data = sceneHashQuery(scene['oshash'])
+        if not scene['date']:
+            if my_stash.getFileDate(scene['origpath']):
+                scene['date'] = my_stash.getFileDate(scene['origpath'])
         if not scraped_data:
             scrape_query = scrubFileName(getQuery(scene))
             scraped_data = sceneQuery(scrape_query)
@@ -511,7 +514,7 @@ def scrapeScene(scene):
                 logging.error("Exception encountered when getting scene by id '" + scraped_scene['id'], exc_info=config.debug_mode)
                 pass
             # If we got new data, update our current data with the new
-            updateSceneFromScrape(scene_data, scraped_scene, scene['path'])
+            updateSceneFromScrape(scene_data, scraped_scene, scene['path'], scene['origpath'])
             print("Success")
         else:
             scene_data["tag_ids"].append(
@@ -570,7 +573,7 @@ def addPerformer(scraped_performer):  # Adds performer using TPDB data, returns 
     return my_stash.addPerformer(stash_performer_data)
 
 
-def updateSceneFromScrape(scene_data, scraped_scene, path=""):
+def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
     global config
     tag_ids_to_add = []
     tags_to_add = []
@@ -590,7 +593,17 @@ def updateSceneFromScrape(scene_data, scraped_scene, path=""):
         if config.set_details:
             scene_data["details"] = scraped_scene["description"]  # Add details
         if config.set_date:
-            scene_data["date"] = scraped_scene["date"]  # Add date
+            #  Check for file date in case of --prefer_file_date
+            scene_data["date"] = ''
+            if config.prefer_file_date and origpath:
+                filedate = my_stash.getFileDate(origpath)
+                if filedate:
+                    if filedate < scraped_scene["date"]:
+                        print(f"Using filename date of {filedate} instead of scraped result of {scraped_scene['date']} due to preferences")
+                        scene_data["date"] = filedate
+            if not scene_data["date"]:
+                scene_data["date"] = scraped_scene["date"]  # Add date
+
         if config.set_url:
             scene_data["url"] = scraped_scene["url"]  # Add URL
         if config.set_cover_image and keyIsSet(scraped_scene, ["background", config.background_size]) and not re.search(r'default\d\.png|default\.png', scraped_scene["background"][config.background_size]):  # Add cover_image
@@ -823,6 +836,7 @@ class config_class:
     clean_filename = True  # If True, will try to clean up filenames before attempting scrape. Often unnecessary, as ThePornDB already does this
     compact_studio_names = True  # If True, this will remove spaces from studio names added from ThePornDB
     fail_no_date = False  # If True, on a failed scrape the system will attempt to remove the date from the query and try a re-scrape
+    prefer_file_date = False  # If True, will use the regex date from filename if less than the date on TPDB.  (Many TPDB dates are date of import rather than release date since the website may not list the release date)   ** VERIFY DATE REGEXES ARE GOOD FOR YOUR IMPORT FILES BEFORE ENABLING! **
     remove_search_tag = False  # If True, this will remove tags that are used for manual scraping on a successful scrape.  BE VERY CAREFUL WITH THIS FLAG!
     proxies = {}  # Leave empty or specify proxy like this: {'http':'http://user:pass@10.10.10.10:8000','https':'https://user:pass@10.10.10.10:8000'}
     path_include = False  # filepath to scrape.  This is pointing to path in the already existing Stash database entry, and isn't an import process
@@ -928,6 +942,7 @@ male_performers_in_title = False # If True, male performers and included in the 
 clean_filename = True #If True, will try to clean up filenames before attempting scrape. Often unnecessary, as ThePornDB already does this
 compact_studio_names = True # If True, this will remove spaces from studio names added from ThePornDB
 fail_no_date = False #If True, on a failed scrape the system will attempt to remove the date from the query and try a re-scrape
+prefer_file_date = False  # If True, will use the regex date from filename if less than the date on TPDB.  (Many TPDB dates are date of import rather than release date since the website may not list the release date)  ** VERIFY DATE REGEXES ARE GOOD FOR YOUR IMPORT FILES BEFORE ENABLING! **
 remove_search_tag = False # If True, this will remove tags that are used for manual scraping on a successful scrape.  BE VERY CAREFUL WITH THIS FLAG!
 proxies={} # Leave empty or specify proxy like this: {'http':'http://user:pass@10.10.10.10:8000','https':'https://user:pass@10.10.10.10:8000'}
 # use_oshash = False # Set to True to use oshash values to query NOT YET SUPPORTED
@@ -996,6 +1011,10 @@ def parseArgs(args):
                            '--fail_no_date',
                            action='store_true',
                            help='retry failed match without date in query')
+    my_parser.add_argument('-pfd',
+                           '--prefer_file_date',
+                           action='store_true',
+                           help='prefer date from file if lower than TPDB returned date')
     my_parser.add_argument(
         '-t',
         '--tags',
@@ -1073,6 +1092,8 @@ def parseArgs(args):
         excluded_tags.append(tag)
     if parsed_args.fail_no_date:
         config.fail_no_date = True
+    if parsed_args.prefer_file_date:
+        config.prefer_file_date = True
     if parsed_args.path_include:
         config.path_include = parsed_args.path_include
     if parsed_args.remove_search_tag:
@@ -1209,6 +1230,7 @@ def main(args):
         print("Scenes to scrape", str(len(scenes)))
 
         for scene in scenes:
+            scene['origpath'] = scene['path']
             scrapeScene(scene)
 
         print("Success! Finished.")
