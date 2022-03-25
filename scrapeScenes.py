@@ -836,7 +836,8 @@ class config_class:
     clean_filename = True  # If True, will try to clean up filenames before attempting scrape. Often unnecessary, as ThePornDB already does this
     compact_studio_names = True  # If True, this will remove spaces from studio names added from ThePornDB
     fail_no_date = False  # If True, on a failed scrape the system will attempt to remove the date from the query and try a re-scrape
-    prefer_file_date = False  # If True, will use the regex date from filename if less than the date on TPDB.  (Many TPDB dates are date of import rather than release date since the website may not list the release date)   ** VERIFY DATE REGEXES ARE GOOD FOR YOUR IMPORT FILES BEFORE ENABLING! **
+    prefer_file_date = True  # If True, will use the regex date from filename if less than the date on TPDB.  (Many TPDB dates are date of import rather than release date since the website may not list the release date)
+        #  Please note, prefer_fail_date (or -pfd on cli) should be used with the 'fail_no_date' (-fnd) option.  This is because if the date on TPDB and the filename are out of sync you won't get a match based on date ** VERIFY DATE REGEXES ARE GOOD FOR YOUR IMPORT FILES BEFORE ENABLING! **
     remove_search_tag = False  # If True, this will remove tags that are used for manual scraping on a successful scrape.  BE VERY CAREFUL WITH THIS FLAG!
     proxies = {}  # Leave empty or specify proxy like this: {'http':'http://user:pass@10.10.10.10:8000','https':'https://user:pass@10.10.10.10:8000'}
     path_include = False  # filepath to scrape.  This is pointing to path in the already existing Stash database entry, and isn't an import process
@@ -1014,7 +1015,7 @@ def parseArgs(args):
     my_parser.add_argument('-pfd',
                            '--prefer_file_date',
                            action='store_true',
-                           help='prefer date from file if lower than TPDB returned date')
+                           help='prefer date from file if lower than TPDB returned date.  (should be used with -fnd|--fail_no_date option)')
     my_parser.add_argument(
         '-t',
         '--tags',
