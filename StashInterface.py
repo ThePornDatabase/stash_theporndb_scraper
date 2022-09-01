@@ -5,6 +5,7 @@ import math
 import re
 import sys
 import time
+import dateparser
 from datetime import datetime
 
 import requests
@@ -642,6 +643,30 @@ class stash_interface:
             self.addTag(stash_tag)
             return self.getTagByName(name)
 
+        return None
+
+    def getFileDate(self, scenepath):
+        regex_list = [
+            [r'[^\d]([012][0-9])[^\d]?(?:(0[1-9])|(1[0-2]))[^\d]?([0-3][0-9])[^\d]', '%y-%m-%d'],
+            [r'[^\d](?:(20[012][0-9])|(19[789][0-9]))[^\d]?(?:(0[1-9])|(1[0-2]))[^\d]?([0-3][0-9])[^\d]', '%Y-%m-%d'],
+            [r'[^\d]([23][0-9])[^\d]?(?:(0[1-9])|(1[0-2]))[^\d]?([012][0-9])[^\d]', '%d-%m-%y'],
+            [r'[^\d]([23][0-9])[^\d]?(?:(0[1-9])|(1[0-2]))[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%d-%m-%Y'],
+            [r'[^\d](?:(0[1-9])|(1[0-2]))[^\d]?([0-3][0-9])[^\d]?([012][0-9])[^\d]', '%m-%d-%y'],
+            [r'[^\d](?:(0[1-9])|(1[0-2]))[^\d]?([0-3][0-9])[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%m-%d-%Y'],
+            [r'[^\d]([0-3]?[0-9])[^\d]?(\w{3}?)[,]?[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%m-%b-%Y'],
+            [r'[^\d]([0-3]?[0-9])[^\d]?(\w{4,9}?)[,]?[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%m-%B-%Y'],
+            [r'[^\w](\w{3}?)[^\w]?([0-3]?[0-9])[,]?[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%b-%m-%Y'],
+            [r'[^\w](\w{4,9}?)[^\w]?([0-3]?[0-9])[,]?[^\d]?(?:(20[012][0-9])|(19[789][0-9]))[^\d]', '%B-%m-%Y'],
+        ]
+        for regex in regex_list:
+            if re.search(regex[0], scenepath):
+                filedate = re.search(regex[0], scenepath)
+                datearray = []
+                for group in filedate.groups():
+                    if group:
+                        datearray.append(group)
+                filedate = "-".join(datearray)
+                return dateparser.parse(filedate, date_formats=[regex[1]]).strftime("%Y-%m-%d")
         return None
 
     @staticmethod
