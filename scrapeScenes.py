@@ -173,7 +173,7 @@ def getBabepediaImage(name):
 
 
 def getTpbdImage(name):
-    url = "https://metadataapi.net/api/performers?q=" + urllib.parse.quote(name)
+    url = "https://metadataapi.net/performers?q=" + urllib.parse.quote(name)
     time.sleep(tpdb_sleep)
     r = requests.get(url, proxies=config.proxies, timeout=(3, 5), headers=tpdb_headers)
     if r.status_code >= 400:
@@ -222,8 +222,8 @@ def getPerformerImageB64(name):  # Searches Babepedia and TPBD for a performer i
 
 def getPerformer(name):
     global tpdb_headers, tpbd_error_count
-    search_url = "https://api.metadataapi.net/api/performers?q=" + urllib.parse.quote(name)
-    data_url_prefix = "https://api.metadataapi.net/api/performers/"
+    search_url = "https://api.metadataapi.net/performers?q=" + urllib.parse.quote(name)
+    data_url_prefix = "https://api.metadataapi.net/performers/"
     try:
         time.sleep(tpdb_sleep)  # sleep before every request to avoid being blocked
         result = requests.get(search_url, proxies=config.proxies, timeout=(3, 5), headers=tpdb_headers)
@@ -246,7 +246,7 @@ def getPerformer(name):
 
 def sceneHashQuery(oshash):  # Scrapes ThePornDB based on oshash.  Returns an array of scenes as results, or None
     global tpdb_headers, tpbd_error_count
-    url = "https://api.metadataapi.net/api/scenes?hash=" + urllib.parse.quote(oshash)
+    url = "https://api.metadataapi.net/scenes?hash=" + urllib.parse.quote(oshash)
     try:
         time.sleep(tpdb_sleep)  # sleep before every request to avoid being blocked
         result = requests.get(url, proxies=config.proxies, timeout=(3, 5), headers=tpdb_headers)
@@ -270,9 +270,9 @@ def sceneQuery(query, parse_function=True):  # Scrapes ThePornDB based on query.
     if custom_sceneQuery is not None:
         query = custom_sceneQuery(query)
     if parse_function:
-        url = "https://api.metadataapi.net/api/scenes?parse=" + urllib.parse.quote(query)
+        url = "https://api.metadataapi.net/scenes?parse=" + urllib.parse.quote(query)
     else:
-        url = "https://api.metadataapi.net/api/scenes?q=" + urllib.parse.quote(query)
+        url = "https://api.metadataapi.net/scenes?q=" + urllib.parse.quote(query)
     try:
         # TPDB seems to work better with YYYY-MM-DD instead of YYYYMMDD
         url = url.replace("%20", " ")
@@ -509,7 +509,7 @@ def scrapeScene(scene):
         if scraped_data:
             scraped_scene = scraped_data[0]
             try:
-                scraped_scene = requests.get('https://api.metadataapi.net/api/scenes/' + scraped_scene['id'], proxies=config.proxies, headers=tpdb_headers).json()["data"]
+                scraped_scene = requests.get('https://api.metadataapi.net/scenes/' + scraped_scene['id'], proxies=config.proxies, headers=tpdb_headers).json()["data"]
             except:
                 logging.error("Exception encountered when getting scene by id '" + scraped_scene['id'], exc_info=config.debug_mode)
                 pass
