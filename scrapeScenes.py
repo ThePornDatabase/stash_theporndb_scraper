@@ -421,42 +421,34 @@ def scrapeScene(scene):
                 filename = file_path.stem
                 scene['path'] = scene['path'].replace(filename, scrubFileName(filename))
             if config.fail_no_date:
+                successful = False
                 if re.search(r'[-._ ](\d{2}[-._ ]\d{2}[-._ ]\d{2})[-._ ]', scene['path']):
-                    scene['path'] = re.sub(r'[-._ ]\d{2}[-._ ]\d{2}[-._ ]\d{2}[-._ ]', r' ', scene['path'])
-                    scene['path'] = scene['path'].replace("  ", " ")
-                    print("No data found, Retrying without date for: [{}]".format(scrape_query))
-                    scrapeScene(scene)
-                    return None
+                    scene['path'] = re.sub(r'[-._ ]\d{2}[-._ ]\d{2}[-._ ]\d{2}[-._ ]', ' ', scene['path'])
+                    successful = True
                 if re.search(r'[-._ ](\d{4}[-._ ]\d{2}[-._ ]\d{2})[-._ ]', scene['path']):
-                    scene['path'] = re.sub(r'[-._ ]\d{4}[-._ ]\d{2}[-._ ]\d{2}[-._ ]', r' ', scene['path'])
-                    scene['path'] = scene['path'].replace("  ", " ")
-                    print("No data found, Retrying without date for: [{}]".format(scrape_query))
-                    scrapeScene(scene)
-                    return None
-                if re.search(r'[- (_.]([012][0-9])|(31)[- (_.]?(0[1-9])|(1[0-2])[- (_.]?((19)|(20))?\d{2}[- (_.]', scene['path']) or re.search(r'[- (_.]((19)|(20))?\d{2}[- (_.]?(0[1-9])|(1[0-2])[- (_.]?([012][0-9])|(31)[- (_.]', scene['path']):
-                    scene['path'] = re.sub(r'[- (_.]([012][0-9])|(31)[- (_.]?(0[1-9])|(1[0-2])[- (_.]?((19)|(20))?\d{2}[- (_.]', r' ', scene['path'])
-                    scene['path'] = re.sub(r'[- (_.]((19)|(20))?\d{2}[- (_.]?(0[1-9])|(1[0-2])[- (_.]?([012][0-9])|(31)[- (_.]', r' ', scene['path'])
-                    scene['path'] = scene['path'].replace("  ", " ")
-                    print("No data found, Retrying without date for: [{}]".format(scrape_query))
-                    scrapeScene(scene)
-                    return None
-                if re.search(r'^([012][0-9])|(31)[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?((19)|(20))?\d{2}[ -(_.]', scene['path']) or re.search(r'^((19)|(20))?\d{2}[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?([012][0-9])|(31)[ -(_.]', scene['path']):
-                    scene['path'] = re.sub(r'[ -(_.]([012][0-9])|(31)[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?((19)|(20))?\d{2}[ -(_.]', r' ', scene['path'])
-                    scene['path'] = re.sub(r'[ -(_.]((19)|(20))?\d{2}[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?([012][0-9])|(31)[ -(_.]', r' ', scene['path'])
-                    scene['path'] = scene['path'].replace("  ", " ")
-                    print("No data found, Retrying without date for: [{}]".format(scrape_query))
-                    scrapeScene(scene)
-                    return None
-                if re.search(r'[ -(_.]([012][0-9])|(31)[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?((19)|(20))?\d{2}$', scene['path']) or re.search(r'[ -(_.]((19)|(20))?\d{2}[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?([012][0-9])|(31)$', scene['path']):
-                    scene['path'] = re.sub(r'[ -(_.]([012][0-9])|(31)[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?((19)|(20))?\d{2}[ -(_.]', r' ', scene['path'])
-                    scene['path'] = re.sub(r'[ -(_.]((19)|(20))?\d{2}[ -(_.]?(0[1-9])|(1[0-2])[ -(_.]?([012][0-9])|(31)[ -(_.]', r' ', scene['path'])
-                    scene['path'] = scene['path'].replace("  ", " ")
-                    print("No data found, Retrying without date for: [{}]".format(scrape_query))
+                    scene['path'] = re.sub(r'[-._ ]\d{4}[-._ ]\d{2}[-._ ]\d{2}[-._ ]', ' ', scene['path'])
+                    successful = True
+                if re.search(r'[-(_. ]([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}[-(_. ]', scene['path']) or re.search(r'[-(_. ]((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)[-(_. ]', scene['path']):
+                    scene['path'] = re.sub(r'[-(_.]([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}[-(_. ]', ' ', scene['path'])
+                    scene['path'] = re.sub(r'[-(_. ]((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)[-(_. ]', ' ', scene['path'])
+                    successful = True
+                if re.search(r'^([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}[-(_. ]', scene['path']) or re.search(r'^((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)[-(_. ]', scene['path']):
+                    scene['path'] = re.sub(r'[-(_. ]([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}[-(_. ]', ' ', scene['path'])
+                    scene['path'] = re.sub(r'[-(_. ]((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)[-(_. ]', ' ', scene['path'])
+                    successful = True
+                if re.search(r'[-(_. ]([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}$', scene['path']) or re.search(r'[-(_. ]((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)$', scene['path']):
+                    scene['path'] = re.sub(r'[-(_. ]([012][0-9])|(31)[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?((19)|(20))?\d{2}[-(_. ]', ' ', scene['path'])
+                    scene['path'] = re.sub(r'[-(_. ]((19)|(20))?\d{2}[-(_. ]?(0[1-9])|(1[0-2])[-(_. ]?([012][0-9])|(31)[-(_. ]', ' ', scene['path'])
+                    successful = True
+
+                if successful:
+                    scene['path'] = ' '.join(scene['path'].split())
+                    print(f'No data found, Retrying without date for: [{scrape_query}]')
                     scrapeScene(scene)
                     return None
                 else:
-                    print("No data found for: [{}]".format(scrape_query))
-                    scene_data["tag_ids"].append(my_stash.getTagByName(config.unmatched_tag)['id'])
+                    print(f'No data found for: [{scrape_query}]')
+                    scene_data['tag_ids'].append(my_stash.getTagByName(config.unmatched_tag)['id'])
                     my_stash.updateSceneData(scene_data)
                     return None
             else:
@@ -517,8 +509,7 @@ def scrapeScene(scene):
             updateSceneFromScrape(scene_data, scraped_scene, scene['path'], scene['origpath'])
             print("Success")
         else:
-            scene_data["tag_ids"].append(
-                my_stash.getTagByName(config.unmatched_tag)['id'])
+            scene_data["tag_ids"].append(my_stash.getTagByName(config.unmatched_tag)['id'])
             my_stash.updateSceneData(scene_data)
             print("No data found for: [{}]".format(scrape_query))
     except:
@@ -624,7 +615,7 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
             elif config.add_studio:
                 # Add the Studio to Stash
                 print("Did not find " + scraped_studio['name'] + " in Stash.  Adding Studio.")
-                studio_id = my_stash.addStudio((createStashStudioData(scraped_studio)))
+                studio_id = my_stash.addStudio(createStashStudioData(scraped_studio))
             if studio_id is not None:  # If we have a valid ID, add studio to Scene
                 scene_data["studio_id"] = studio_id
 
@@ -643,12 +634,10 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
                 if keyIsSet(scraped_performer, ["parent", "extras"]) and (not keyIsSet(scraped_performer, ["parent", "extras", "gender"]) or scraped_performer["parent"]["extras"]["gender"] != 'Female'):
                     not_female = True
 
-                if (not keyIsSet(scraped_performer, ["parent", "extras", "gender"]) and
-                        keyIsSet(scraped_performer, ["extra", "gender"]) and
-                        scraped_performer["extra"]["gender"] == 'Male'):
+                if not keyIsSet(scraped_performer, ["parent", "extras", "gender"]) and keyIsSet(scraped_performer, ["extra", "gender"]) and scraped_performer["extra"]["gender"] == 'Male':
                     not_female = True
 
-                if (config.only_add_female_performers and not scraped_performer['name'].lower() in path.lower() and not_female):
+                if config.only_add_female_performers and not scraped_performer['name'].lower() in path.lower() and not_female:
                     continue  # End current loop on male performers not in path
 
                 performer_id = None
@@ -659,17 +648,14 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
                     performer_id = stash_performer["id"]  # If performer already exists, use that
                     if config.male_performers_in_title or not not_female:
                         performer_names.append(performer_name)  # Add to list of performers in scene
-                elif keyIsSet(
-                        scraped_performer, ['parent', 'name']):  # If site name does not match someone in Stash and TPBD has a linked parent
+                elif keyIsSet(scraped_performer, ['parent', 'name']):  # If site name does not match someone in Stash and TPBD has a linked parent
                     if (  # Test for when we should automatically accept the parent name
                             areAliases(scraped_performer['name'], scraped_performer['parent']['name'], scraped_scene['site']['name'].replace(' ', '') if config.compact_studio_names else scraped_scene['site']['name']) or  # Parent performer seems to be a valid alias to site performer
                             " " not in scraped_performer['name'] or  # Single name, so we just trust TPBD
                             config.trust_tpbd_aliases  # Flag says to just trust TPBD
                     ):
-                        performer_name = scraped_performer['parent'][
-                            'name']  # Adopt the parent name
-                        stash_performer = my_stash.getPerformerByName(
-                            performer_name)
+                        performer_name = scraped_performer['parent']['name']  # Adopt the parent name
+                        stash_performer = my_stash.getPerformerByName(performer_name)
                         if stash_performer:
                             performer_id = stash_performer["id"]  # If performer already exists, use that
                             if config.male_performers_in_title or not not_female:
@@ -678,9 +664,7 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
                             add_this_performer = True
                     else:  # We can't automatically trust the parent name.  Ask for manual confirmation if flag is set.
                         if config.confirm_questionable_aliases:
-                            confirmed_performer = manConfirmAlias(
-                                scraped_performer,
-                                scraped_scene['site']["name"])
+                            confirmed_performer = manConfirmAlias(scraped_performer, scraped_scene['site']["name"])
                             if confirmed_performer:
                                 performer_name = scraped_performer['parent']['name']  # Adopt the parent name
                                 stash_performer = my_stash.getPerformerByName(performer_name)
@@ -709,8 +693,7 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
                 if (not stash_performer and  # We don't have a match so far
                         not keyIsSet(scraped_performer, ['parent', 'name'])
                         and  # No TPBD parent
-                        config.
-                                tag_ambiguous_performers  # Config says tag no parent
+                        config.tag_ambiguous_performers  # Config says tag no parent
                 ):
                     print(performer_name + " was not found in Stash. However, " + performer_name + " is not linked to a known (multi-site) performer at ThePornDB.  Skipping addition and tagging scene.")
                     tag_id = my_stash.getTagByName("ThePornDB Ambiguous Performer: " + performer_name, True)["id"]
@@ -720,16 +703,14 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
 
                 # Add performer if we meet relevant requirements
                 if add_this_performer and config.add_performers:
-                    print("Did not find " + performer_name +
-                          " in Stash.  Adding performer.")
+                    print("Did not find " + performer_name + " in Stash.  Adding performer.")
                     performer_id = addPerformer(scraped_performer)
                     if config.male_performers_in_title or not not_female:
                         performer_names.append(performer_name)
 
                 if performer_id:  # If we have a valid ID, add performer to Scene
                     scraped_performer_ids.append(performer_id)
-            scene_data["performer_ids"] = list(
-                set(scene_data["performer_ids"] + scraped_performer_ids))
+            scene_data["performer_ids"] = list(set(scene_data["performer_ids"] + scraped_performer_ids))
 
         # Set Title
         if config.set_title:
@@ -739,8 +720,7 @@ def updateSceneFromScrape(scene_data, scraped_scene, path="", origpath=""):
                     title_prefix = "{}, and {} ".format(
                         ", ".join(performer_names[:-1]), performer_names[-1])
                 elif len(performer_names) == 2:
-                    title_prefix = performer_names[
-                                       0] + " and " + performer_names[1] + " "
+                    title_prefix = performer_names[0] + " and " + performer_names[1] + " "
                 elif len(performer_names) == 1:
                     title_prefix = performer_names[0] + " "
                 for name in performer_names:
@@ -853,8 +833,7 @@ class config_class:
                 if (key == "server_ip" or key == "server_port") and ("<" in value or ">" in value):
                     logging.warning("Please remove '<' and '>' from your server_ip and server_port lines in configuration.py")
                     sys.exit()
-                if value is None or isinstance(
-                        value, type(vars(config_class).get(key, None))):
+                if value is None or isinstance(value, type(vars(config_class).get(key, None))):
                     vars(self)[key] = value
                 else:
                     logging.warning("Invalid configuration parameter: " + key, exc_info=config_class.debug_mode)
@@ -1213,8 +1192,7 @@ def main(args):
             scenes_without_tags = my_stash.findScenes(**findScenes_params_excl)
             scenes = scenes_without_tags
 
-        if len(excluded_tags) == 0 and len(
-                required_tags) == 0:  # If no tags are required or excluded
+        if len(excluded_tags) == 0 and len(required_tags) == 0:  # If no tags are required or excluded
             findScenes_params_filtered = copy.deepcopy(findScenes_params)
             if not config.scrape_stash_id:  # include only scenes without stash_id
                 findScenes_params_filtered['scene_filter']['stash_id'] = {'modifier': 'IS_NULL', 'value': 'none'}
