@@ -52,7 +52,7 @@ def scrubFileName(file_name):
     scrubbedWords = [
         r'\d{3,4}p', 'MP4-(.+?)$', ' XXX ', 'WMV-(.+?)$', '-UNKNOWN', ' x264-(.+?)$', 'DVDRip',
         'WEBRIP', r'[-._ ]WEB[-._ ]', r'\[PRiVATE\]', 'HEVC', 'x265', 'PRT-xpost', '-xpost',
-        r'[-._ ]SD[-._ ]', r'[-._ ]HD[-._ ]', '\'', '&', ' rq', 'SD$', 'HD$'
+        r'[-._ ]SD[-._ ]', r'[-._ ]HD[-._ ]', '\'', '&', ' rq', 'SD$', 'HD$', r'\[[^\]]*\]'
     ]
     clean_name = re.sub(r'\.', ' ', file_name)  # replace periods
     for word in scrubbedWords:  # delete scrubbedWords
